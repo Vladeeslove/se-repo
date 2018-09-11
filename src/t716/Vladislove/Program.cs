@@ -9,6 +9,7 @@ using System.Threading;
 
 namespace Tamagocha
 {
+    ////test recommit
     /// <summary>
     public class StateAnimal
     {
