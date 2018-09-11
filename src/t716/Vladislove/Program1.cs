@@ -42,7 +42,7 @@ class GetProcessesByNameClass
            if(_cl==false)Console.Clear();
             int i = 0; double test = 0; double test1 = 0;
             Process[] processes = Process.GetProcesses();
-            Console.WriteLine("{0,-25}||{1,-11}||{2,-11}||{3,-11}||", "Name", "PID", "RAM_Ussage", "CPU_ussage");
+            Console.WriteLine("{0,-25}||{1,-11}||{2,-11}||{3,-11}||", "Name", "PID","CPU_ussage" ,"RAM_Ussage" );
             Console.WriteLine("________________________________________________________________________________________________");
             // UIElement.Uid();
             foreach (Process p in processes)
