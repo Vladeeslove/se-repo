@@ -8,54 +8,37 @@ using System.Windows;
 using System.Threading;
 using System.Management;
 using System.Timers;
+using System.Drawing;
 
 class GetProcessesByNameClass
 {
+
+    static public System.Timers.Timer tmr = new System.Timers.Timer();
+    static public System.Timers.Timer tmr1 = new System.Timers.Timer();
     public static void Main(string[] args)
     {
-        bool cl=false;
-        Thread timer = new Thread(new ThreadStart(new Action(() => FirstTypeMonitoring(cl))));
-        Thread timer1 = new Thread(new ThreadStart(new Action(() => SecondTypeMonitoring(cl))));
-        Thread timer2 = new Thread(TwoMonitoring);
+        tmr.Elapsed += new System.Timers.ElapsedEventHandler(FirstTypeMonitoring);
+        tmr.Interval = 13000;
+        tmr1.Elapsed += new System.Timers.ElapsedEventHandler(SecondTypeMonitoring);
+        tmr1.Interval = 5000;
 
-
-        Console.Clear();
-        Console.WriteLine("1.FirstTypeMonitoring\n2.SecondTypeMonitoring\n3.Both types(firt and second)\n Pick:");
-        int sw = Convert.ToInt32(Console.ReadLine());
-
-            switch (sw)
+        switch (Convert.ToInt32(args.First()))//Метод который возращает первый элемент массива
             {
 
-                case 1: { cl = false; timer.Start(); break; }
-                case 2: { cl = false; timer1.Start(); break; }
-                case 3: { timer2.Start(); break; }
+                case 1: { tmr.Enabled = true; break; }
+                case 2: { tmr1.Enabled = true; break; }
                 default: { Environment.Exit(0); break; }
             }
 
-
+        Thread.Sleep(10000);
         Console.ReadKey();
     }
-   public static void FirstTypeMonitoring(bool _cl)//Отображение в виде таблицы
+    /// <summary>
+ 
+   public static void FirstTypeMonitoring(object sender, ElapsedEventArgs e)//Отображение в виде таблицы
         {
-      if(_cl==false)  for (; ; )
-        {
-           if(_cl==false)Console.Clear();
-            int i = 0; double test = 0; double test1 = 0;
-            Process[] processes = Process.GetProcesses();
-            Console.WriteLine("{0,-25}||{1,-11}||{2,-11}||{3,-11}||", "Name", "PID","CPU_ussage" ,"RAM_Ussage" );
-            Console.WriteLine("________________________________________________________________________________________________");
-            // UIElement.Uid();
-            foreach (Process p in processes)
-            {//выводит все запущенные процессы
-                test1 += p.PagedSystemMemorySize64 / 1000000;
-                i++; test += p.WorkingSet64 / 1000000;
-                Console.WriteLine("{0,-25}||{1,-11}||{2,-11}||{3,-11}||", p.ProcessName, p.Id, p.PagedSystemMemorySize64 / 1000000, p.PagedMemorySize64 / 1000000);
-            }
-            Console.WriteLine("\n------------------------------------------\n" + "\n" + test1 + " Resultate: Count process: " +/*Environment.ProcessorCount*/i + "\nCount public CPU: " + test + "\nMachineName: " + Environment.MachineName);//Вывод имени компьютера
-           if(_cl==false) Thread.Sleep(13000);                                                                                                                                                                                                                       //  Console.ReadKey();
-        }
-        else
-        {
+
+        Console.Clear();
             int i = 0; double test = 0; double test1 = 0;
             Process[] processes = Process.GetProcesses();
             Console.WriteLine("{0,-25}||{1,-11}||{2,-11}||{3,-11}||", "Name", "PID", "RAM_Ussage", "CPU_ussage");
@@ -67,17 +50,16 @@ class GetProcessesByNameClass
                 i++; test += p.WorkingSet64 / 1000000;
                 Console.WriteLine("{0,-25}||{1,-11}||{2,-11}||{3,-11}||", p.ProcessName, p.Id, p.PagedSystemMemorySize64 / 1000000, p.PagedMemorySize64 / 1000000);
             }
-            Console.WriteLine("\n------------------------------------------\n" + "\n" + test1 + " Resultate: Count process: " +/*Environment.ProcessorCount*/i + "\nCount public CPU: " + test + "\nMachineName: " + Environment.MachineName);//Вывод имени компьютера
-        }
+            Console.WriteLine("\n------------------------------------------\n" + "\n" + test1 + " Resultate:\n Count process: " +/*Environment.ProcessorCount*/i + "\nCount public CPU: " + test + "\nMachineName: " + Environment.MachineName);//Вывод имени компьютера
+        
         }
 
-    public static void SecondTypeMonitoring(bool _cl)//отображение загруженности Цп и ОЗУ
+ public static void SecondTypeMonitoring(object sender, ElapsedEventArgs e)//отображение загруженности Цп и ОЗУ
     {
-        Console.WriteLine("_______________________________________________________\nPlease wait resultat from processor and memory...");
-      if(_cl==false)  for (; ; )
-        {
-          if(_cl==false)  Console.Clear();
-                int b;
+        Console.Clear();
+        Console.WriteLine("_____________________________" + DateTime.Now + "__________________________\nPlease wait resultat from processor and memory...");
+
+        
                 PerformanceCounter ob1 = new PerformanceCounter("Процессор", "% загруженности процессора", "_Total");
                 PerformanceCounter ob2 = new PerformanceCounter("Память", "% использования выделенной памяти");
                 Console.WriteLine("Processor downloaded on {0}% ", ob1.NextValue());
@@ -90,36 +72,7 @@ class GetProcessesByNameClass
                     else
                         Console.Write(".");
                 }
-                Console.Write("]");
-                if (_cl==false) Thread.Sleep(10000);
-        }
-        else
-        {
-            int b;
-            PerformanceCounter ob1 = new PerformanceCounter("Процессор", "% загруженности процессора", "_Total");
-            PerformanceCounter ob2 = new PerformanceCounter("Память", "% использования выделенной памяти");
-            Console.WriteLine("Processor downloaded on {0}% ", ob1.NextValue());
-            Console.WriteLine("Memory downloaded on {0}% ", ob2.NextValue());
-            Console.Write("Downloaded... [");
-            for (int i = 0; i < 100; i++)
-            {
-                if (i < (int)ob2.NextValue())
-                    Console.Write("|");
-                else
-                    Console.Write(".");
-            }
-            Console.Write("]");
-        }
-    }
-    public static void TwoMonitoring()
-    {
-        bool c = true;
-        for(; ; )
-        {
-            Console.Clear();
-            FirstTypeMonitoring(c);
-            SecondTypeMonitoring(c);
-            Thread.Sleep(12000);
-        }
+                Console.Write("]\n__________________________________________________________________________\n");
+     
     }
 }
